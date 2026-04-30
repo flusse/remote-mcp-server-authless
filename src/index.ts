@@ -90,8 +90,7 @@ export class MyMCP extends McpAgent {
 				      ]
 				    };
 				  }
-				}	
-			);
+				}
 ///////////////////////////////////////
 
 
