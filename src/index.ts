@@ -62,18 +62,9 @@ export class MyMCP extends McpAgent {
 				  }
 				}	
 			);
+		}
+	}
 ///////////////////////////////////////
-
-
-
-
-
-
-
-
-
-		
-
 
 export default {
 	fetch(request: Request, env: Env, ctx: ExecutionContext) {
