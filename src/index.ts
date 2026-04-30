@@ -5,127 +5,109 @@ import { z } from "zod";
 //Get Cloudfare workers ENV 
 import { env } from "cloudflare:workers";
 
-
 // Define our MCP agent with tools
 export class MyMCP extends McpAgent {
 	server = new McpServer({
 		name: "weather-mcp-server",
 		version: "1.0.0",
 	});
+
 	async init() {
-			
-		this.server.tool(
-			'Tanium-GetEndpoints',
-			'This gets the amount of known endpoints, both online and offline',
-
-			////
-				async ({input}) => {
-				  try {
-					  //placehodler comment
-				    const response = await fetch(`${env.API_Endpoint}`, {
-				      method: 'POST',
-				      headers: {
-				        'session': `${env.API_Key}`, // Your API token
-				        'Content-Type': 'application/json',
-				      },
-				      body: JSON.stringify({
-				        query: "query {endpoints{totalRecords}}",
-				        variables: { "a": "placeholder" },
-				      }),
-				    });
-				
-				    // Parse the JSON response
-				    const data = await response.json();
-				    
-				    // Check if the request was successful
-				    if (!response.ok) {
-				      throw new Error(`HTTP error! status: ${response.status}`);
-				    }
-				
-				    return {
-				      content: [
-				        {
-				          type: 'text',
-				          text: JSON.stringify(data, null, 2), // Pretty print the JSON
-				        }
-				      ]
-				    };
-				  } catch (error) {
-				    return {
-				      content: [
-				        {
-				          type: 'text',
-				          text: `Error: ${error.message}`,
-				        }
-				      ]
-				    };
-				  }
-				}	
-			);
 
 		this.server.tool(
 			'Tanium-GetEndpoints',
 			'This gets the amount of known endpoints, both online and offline',
 
-			////
-				async ({input}) => {
-				  try {
-					  //placehodler comment
-				    const response = await fetch(`${env.API_Endpoint}`, {
-				      method: 'POST',
-				      headers: {
-				        'session': `${env.API_Key}`, // Your API token
-				        'Content-Type': 'application/json',
-				      },
-				      body: JSON.stringify({
-				        query: `query exampleGetEndpoints($count: Int, $time: Int) {
-  endpoints(source: {ts: {expectedCount: $count, stableWaitTime: $time}}) {
-    edges {
-      node {
-        computerID
-        name
-        serialNumber
-        ipAddress
-      }
-    }
-  }
-}`,
-				        variables: { "count": "1", "time": "10" },
-				      }),
-				    });
-				
-				    // Parse the JSON response
-				    const data = await response.json();
-				    
-				    // Check if the request was successful
-				    if (!response.ok) {
-				      throw new Error(`HTTP error! status: ${response.status}`);
-				    }
-				
-				    return {
-				      content: [
-				        {
-				          type: 'text',
-				          text: JSON.stringify(data, null, 2), // Pretty print the JSON
-				        }
-				      ]
-				    };
-				  } catch (error) {
-				    return {
-				      content: [
-				        {
-				          type: 'text',
-				          text: `Error: ${error.message}`,
-				        }
-				      ]
-				    };
-				  }
-				}	
-			);
+			async ({ input }) => {
+				try {
+					//placehodler comment
+					const response = await fetch(`${env.API_Endpoint}`, {
+						method: 'POST',
+						headers: {
+							'session': `${env.API_Key}`, // Your API token
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							query: "query {endpoints{totalRecords}}",
+							variables: { "a": "placeholder" },
+						}),
+					});
 
-		}
+					// Parse the JSON response
+					const data = await response.json();
+
+					// Check if the request was successful
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+
+					return {
+						content: [
+							{
+								type: 'text',
+								text: JSON.stringify(data, null, 2), // Pretty print the JSON
+							}
+						]
+					};
+				} catch (error) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Error: ${error.message}`,
+							}
+						]
+					};
+				}
+			}
+		);
+
+		this.server.tool(
+			'Tanium-EndpointNamesAndSerialNumbers',
+			'Returns computer names and serial numbers from Tanium inventory',
+
+			async ({ input }) => {
+				try {
+					const response = await fetch(`${env.API_Endpoint}`, {
+						method: 'POST',
+						headers: {
+							'session': `${env.API_Key}`,
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							query: `query exampleGetEndpoints($count: Int, $time: Int, $maxAge: Int) {endpoints(source: {ts: {expectedCount: $count, stableWaitTime: $time, maxAge: $maxAge}}) {edges {node {computerID name serialNumber ipAddress sensorReadings(sensors: [{name: "Installed Applications"}, {name: "Running Applications"}]) {columns {name values sensor {name}}}}}}}`,
+							variables: `{"count": 1, "time": 10, "maxAge": 300}`,
+						}),
+					});
+
+					const data = await response.json();
+
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+
+					return {
+						content: [
+							{
+								type: 'text',
+								text: JSON.stringify(data, null, 2),
+							}
+						]
+					};
+				} catch (error) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Error: ${error.message}`,
+							}
+						]
+					};
+				}
+			}
+		);
 	}
-///////////////////////////////////////
+}
 
 export default {
 	fetch(request: Request, env: Env, ctx: ExecutionContext) {
