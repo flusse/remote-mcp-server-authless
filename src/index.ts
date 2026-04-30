@@ -64,8 +64,8 @@ export class MyMCP extends McpAgent {
 			);
 
 		this.server.tool(
-			'Tanium-GetEndpointsNamesAndSerialNumber',
-			'This gets the names and serial numbers, both online and offline',
+			'Tanium-GetEndpoints',
+			'This gets the amount of known endpoints, both online and offline',
 
 			////
 				async ({input}) => {
@@ -79,21 +79,21 @@ export class MyMCP extends McpAgent {
 				      },
 				      body: JSON.stringify({
 				        query: `query exampleGetEndpoints($count: Int, $time: Int) {
-								  "endpoints(source: {ts: {expectedCount: $count, stableWaitTime: $time}}) {
-								    edges {
-								      node {
-								        computerID
-								        name
-								        serialNumber
-								        ipAddress
-								      }
-								    }
-								  }
-								}`,
+  endpoints(source: {ts: {expectedCount: $count, stableWaitTime: $time}}) {
+    edges {
+      node {
+        computerID
+        name
+        serialNumber
+        ipAddress
+      }
+    }
+  }
+}`,
 				        variables: { "count": "1", "time": "10" },
 				      }),
-				});
-
+				    });
+				
 				    // Parse the JSON response
 				    const data = await response.json();
 				    
@@ -122,6 +122,7 @@ export class MyMCP extends McpAgent {
 				  }
 				}	
 			);
+
 		}
 	}
 ///////////////////////////////////////
