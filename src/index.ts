@@ -92,7 +92,8 @@ export class MyMCP extends McpAgent {
 								}`,
 				        variables: { "count": "1", "time": "10" },
 				      }),
-				
+				});
+
 				    // Parse the JSON response
 				    const data = await response.json();
 				    
