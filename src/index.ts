@@ -78,18 +78,18 @@ export class MyMCP extends McpAgent {
 				        'Content-Type': 'application/json',
 				      },
 				      body: JSON.stringify({
-				        query: "query exampleGetEndpoints($count: Int, $time: Int) { \\
-								  endpoints(source: {ts: {expectedCount: $count, stableWaitTime: $time}}) { \\
-								    edges { \\
-								      node { \\
-								        computerID \\
-								        name \\
-								        serialNumber \\
-								        ipAddress \\
-								      } \\
-								    } \\
-								  } \\
-								}",
+				        query: `query exampleGetEndpoints($count: Int, $time: Int) {
+								  "endpoints(source: {ts: {expectedCount: $count, stableWaitTime: $time}}) {
+								    edges {
+								      node {
+								        computerID
+								        name
+								        serialNumber
+								        ipAddress
+								      }
+								    }
+								  }
+								}`,
 				        variables: { "count": "1", "time": "10" },
 				      }),
 				
