@@ -62,6 +62,65 @@ export class MyMCP extends McpAgent {
 				  }
 				}	
 			);
+
+		this.server.tool(
+			'Tanium-GetEndpointsNamesAndSerialNumber',
+			'This gets the names and serial numbers, both online and offline',
+
+			////
+				async ({input}) => {
+				  try {
+					  //placehodler comment
+				    const response = await fetch(`${env.API_Endpoint}`, {
+				      method: 'POST',
+				      headers: {
+				        'session': `${env.API_Key}`, // Your API token
+				        'Content-Type': 'application/json',
+				      },
+				      body: JSON.stringify({
+				        query: "query exampleGetEndpoints($count: Int, $time: Int) { \\
+								  endpoints(source: {ts: {expectedCount: $count, stableWaitTime: $time}}) { \\
+								    edges { \\
+								      node { \\
+								        computerID \\
+								        name \\
+								        serialNumber \\
+								        ipAddress \\
+								      } \\
+								    } \\
+								  } \\
+								}",
+				        variables: { "count": "1", "time": "10" },
+				      }),
+				
+				    // Parse the JSON response
+				    const data = await response.json();
+				    
+				    // Check if the request was successful
+				    if (!response.ok) {
+				      throw new Error(`HTTP error! status: ${response.status}`);
+				    }
+				
+				    return {
+				      content: [
+				        {
+				          type: 'text',
+				          text: JSON.stringify(data, null, 2), // Pretty print the JSON
+				        }
+				      ]
+				    };
+				  } catch (error) {
+				    return {
+				      content: [
+				        {
+				          type: 'text',
+				          text: `Error: ${error.message}`,
+				        }
+				      ]
+				    };
+				  }
+				}	
+			);
 		}
 	}
 ///////////////////////////////////////
