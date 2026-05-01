@@ -15,7 +15,7 @@ export class MyMCP extends McpAgent {
 	async init() {
 
 		this.server.tool(
-			'Tanium-GetEndpoints',
+			'Tanium-GetEndpointCount',
 			'This gets the amount of known endpoints, both online and offline',
 
 			async ({ input }) => {
